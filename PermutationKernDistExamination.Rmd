@@ -19,7 +19,7 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 #Run this as a loop and examine shape of density of BF's
 LBF<-c()
 set.seed(1000)
-for(D in 1:1000)
+for(D in 1:100)
 {
   dataset<- rnorm(500)
   X1 <- dataset[1:(length(dataset)*.3)]
@@ -28,7 +28,7 @@ for(D in 1:1000)
   X1perm <- datasetperm[1:(length(dataset)*.3)]
   X2perm <- datasetperm[-(1:(length(dataset)*.3))]
 
-  cauchsamp<- rcauchy(1000)
+  cauchsamp<- rcauchy(100)
 
   poscauchsamp <- cauchsamp[cauchsamp > 0] 
 
@@ -92,7 +92,7 @@ summary(LBF)
 sd(LBF)
 median(LBF)
 mean(LBF)
-
+plot(LBF)
 
 #This calculation is very time expensive!
 
@@ -114,14 +114,6 @@ BF2
 logintegnormguess - log(sum(exp(prodlist2)))
 
 #Normal distribution is favored.
-
-integralguess3 = 1 / (sum(X2) + 1)
-loginteguss <- log(integralguess3)
-
-LBF3 <- log(sum(exp(prodlist2))) - loginteguss
-LBF3
-
-#Exponential distribution is not favored.
 
 #Everything is still as expected.
 
@@ -199,12 +191,5 @@ BFPriorFree
 
 
 
-
-
-```{r}
-
-
-
-```
 
 
