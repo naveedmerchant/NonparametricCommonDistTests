@@ -1,6 +1,6 @@
 #Run this as a loop and examine shape of density of BF's
 LBF<-c()
-set.seed(1000)
+set.seed(900)
 for(D in 1:100)
 {
   dataset<- rnorm(500)
