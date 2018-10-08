@@ -1,0 +1,210 @@
+---
+title: "Permutation Test Distribution examination"
+author: "Naveed Merchant"
+date: "October 5, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r Distribution Examination}
+
+#Run this as a loop and examine shape of density of BF's
+LBF<-c()
+set.seed(1000)
+for(D in 1:1000)
+{
+  dataset<- rnorm(500)
+  X1 <- dataset[1:(length(dataset)*.3)]
+  X2 <- dataset[-(1:(length(dataset)*.3))]
+  datasetperm <- sample(dataset)
+  X1perm <- datasetperm[1:(length(dataset)*.3)]
+  X2perm <- datasetperm[-(1:(length(dataset)*.3))]
+
+  cauchsamp<- rcauchy(1000)
+
+  poscauchsamp <- cauchsamp[cauchsamp > 0] 
+
+#We draw from truncated cauchy, this is because we want our bandwidth to be always positive. 
+
+B <- (quantile(X2,probs = .75) - quantile(X2,probs = .25))/1.35
+
+#Used in prior for bandwidth
+
+importancepart <- ((2*B*(1/poscauchsamp^2)*(exp(-(B^2)/(poscauchsamp)^2)) / sqrt(pi))) / (2*dcauchy(poscauchsamp))
+
+#Computes prior after adjusting for drawing from cauchy
+
+#The next few lines evaluate the likelihood of the model under the gaussian kernel.
+
+
+k <- length(X1)
+n <- length(X2)
+sum <- 0
+prod <- 0
+sum2 <- 0
+prod2 <- 0
+
+prodlist1<-c()
+prodlist2<-c()
+
+for(z in 1:length(poscauchsamp))
+{
+  prod <- 0
+  for(j in 1:n)
+  {
+    sum <- 0
+    for(i in 1:k)
+    {
+      sum <- sum + exp(-.5*((X2[j]-X1[i])/poscauchsamp[z])^2)
+    }
+    prod <- prod + log(sum) + log((1/sqrt(2*pi))) + log((k*poscauchsamp[z])^(-1))
+  }
+  prodlist1[z] <- prod + log(importancepart[z])
+}
+for(z in 1:length(poscauchsamp))
+{
+  prod <- 0
+  for(j in 1:n)
+  {
+    sum <- 0
+    for(i in 1:k)
+    {
+      sum <- sum + exp(-.5*((X2perm[j]-X1perm[i])/poscauchsamp[z])^2)
+    }
+    prod <- prod + log(sum) + log((1/sqrt(2*pi))) + log((k*poscauchsamp[z])^(-1))
+  }
+  prodlist2[z] <- prod + log(importancepart[z])
+}
+BF1 <- sum(exp(prodlist1-max(prodlist2))) / sum(exp(prodlist2-max(prodlist2)))
+logBF1 <- log(BF1)
+LBF[D]<-logBF1
+}
+
+summary(LBF)
+sd(LBF)
+median(LBF)
+mean(LBF)
+
+
+#This calculation is very time expensive!
+
+#One of the permutations is favored quite harshly!
+
+
+
+
+```
+
+
+
+
+
+```{r Testing this with Normal and Exp distrib}
+logintegnormguess <- (-(n/2)) * log(2*pi) - .5*log(n+1) + (-.5*sum(X2^2)) + (-.5*(sum(X2)^2)/(n+1))
+BF2 <- logintegnormguess - log(sum(exp(prodlist1)))
+BF2
+logintegnormguess - log(sum(exp(prodlist2)))
+
+#Normal distribution is favored.
+
+integralguess3 = 1 / (sum(X2) + 1)
+loginteguss <- log(integralguess3)
+
+LBF3 <- log(sum(exp(prodlist2))) - loginteguss
+LBF3
+
+#Exponential distribution is not favored.
+
+#Everything is still as expected.
+
+```
+
+
+
+```{r Examining prior free CV bayes}
+#Choose bandwidth that satisfies some important quality
+#I.e. maximum likelihood, SURE, etc.
+#https://d-nb.info/104355470X/34
+
+#Do this with current dataset.
+
+#Permute dataset and redo this procedure.
+
+#If datasets are from common distribution this should be OK?
+
+#We can optimize the likelihood
+#Split X into 3 parts (X1,X2,X3)
+X1 <- dataset[1:(length(dataset)*.3)]
+X2 <- dataset[(length(dataset)*.3 + 1):(length(dataset)*.6)]
+X3 <- dataset[(length(dataset)*.6 + 1):(length(dataset))]
+
+GaussKernLik <- function(h,X1,X2) 
+{
+  prod <- 0
+  k <- length(X1)
+  n <- length(X2)
+  for(j in 1:n)
+  {
+    sum <- 0
+    for(i in 1:k)
+    {
+      sum <- sum + exp(-.5*((X2[j]-X1[i])/h)^2)
+    }
+    prod <- prod + log(sum) + log((1/sqrt(2*pi))) + log((k*h)^(-1))
+  }
+  return(prod)  
+}
+h<-1
+Optimumbandwidthreg <- optimize(GaussKernLik, X1 = X1, X2 = X2, lower = .00001, upper = 5, maximum = TRUE, tol = .001)
+
+#Optimize runs pretty fast.
+X1perm <- datasetperm[1:(length(dataset)*.3)]
+X2perm <- datasetperm[(length(dataset)*.3 + 1):(length(dataset)*.6)]
+X3perm <- datasetperm[(length(dataset)*.6 + 1):(length(dataset))]
+
+
+Optimumbandwidthperm <- optimize(GaussKernLik, X1 = X1perm, X2 = X2perm, lower = .00001, upper = 5, maximum = TRUE, tol = .001)
+
+#We have an estimate for our bandwidth, we proceed with the test.
+
+BFPriorFree <- GaussKernLik(Optimumbandwidthreg$maximum,X1 = X1, X2 = X3) / GaussKernLik(Optimumbandwidthperm$maximum,X1 = X1perm, X2 = X3perm)
+
+BFPriorFree
+
+#Almost exactly 1, this is a potential way to check if data are from "common distribution", we should check an example where they don't come from a common distribution and verify that a problem occurs.
+
+#We want to go ahead and try the idea in the paper that tries to test to see if things come from common distributions too.
+```
+
+
+
+
+
+
+```{r Examining when things are drawn from different distributions}
+
+#Uh actually what does it mean if things share a common distribution again?
+
+
+```
+
+
+
+
+
+
+```{r}
+
+
+
+```
+
+
