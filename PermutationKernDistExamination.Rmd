@@ -8,10 +8,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+I fixed computation issues earlier so underflow should no longer be a problem.
 
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
+We can run through and see how our "importance sampling test does"
 
 
 ```{r Distribution Examination}
@@ -102,23 +101,22 @@ plot(LBF)
 
 
 ```
+This is the plot of the log(bayes factor) not the bayes factor, so these things are very small and very large!
 
 
 
 
-
-```{r Testing this with Normal and Exp distrib}
+```{r Testing this with Normal distrib}
 logintegnormguess <- (-(n/2)) * log(2*pi) - .5*log(n+1) + (-.5*sum(X2^2)) + (-.5*(sum(X2)^2)/(n+1))
 BF2 <- logintegnormguess - log(sum(exp(prodlist1)))
 BF2
 logintegnormguess - log(sum(exp(prodlist2)))
 
-#Normal distribution is favored.
-
-#Everything is still as expected.
-
 ```
 
+Normal distribution is favored (admittedly not by much).
+
+It's also favored by 1 kernel and less favored by permuted kernel.
 
 
 ```{r Examining prior free CV bayes}
@@ -167,29 +165,214 @@ Optimumbandwidthperm <- optimize(GaussKernLik, X1 = X1perm, X2 = X2perm, lower =
 
 #We have an estimate for our bandwidth, we proceed with the test.
 
-BFPriorFree <- GaussKernLik(Optimumbandwidthreg$maximum,X1 = X1, X2 = X3) / GaussKernLik(Optimumbandwidthperm$maximum,X1 = X1perm, X2 = X3perm)
+BFPriorFree <- GaussKernLik(Optimumbandwidthreg$maximum,X1 = X1, X2 = X3) - GaussKernLik(Optimumbandwidthperm$maximum,X1 = X1perm, X2 = X3perm)
 
 BFPriorFree
 
-#Almost exactly 1, this is a potential way to check if data are from "common distribution", we should check an example where they don't come from a common distribution and verify that a problem occurs.
+#This is very volatile
 
 #We want to go ahead and try the idea in the paper that tries to test to see if things come from common distributions too.
 ```
-
-
-
-
-
 
 ```{r Examining when things are drawn from different distributions}
 
 #Uh actually what does it mean if things share a common distribution again?
 
+#Draw from a normal and exponential perhaps?
+set.seed(300)
+dataset1 <- rnorm(1000,mean = 10, sd =1)
+
+dataset2 <- rexp(1000, rate = 1/10)
+
+x <- c(dataset1, dataset2)
+
+dataset <- sample(x)
+datasetperm <- sample(dataset)
+
+X1 <- dataset[1:(length(dataset)*.3)]
+X2 <- dataset[(length(dataset)*.3 + 1):(length(dataset)*.6)]
+X3 <- dataset[(length(dataset)*.6 + 1):(length(dataset))]
+
+GaussKernLik <- function(h,X1,X2) 
+{
+  prod <- 0
+  k <- length(X1)
+  n <- length(X2)
+  for(j in 1:n)
+  {
+    sum <- 0
+    for(i in 1:k)
+    {
+      sum <- sum + exp(-.5*((X2[j]-X1[i])/h)^2)
+    }
+    prod <- prod + log(sum) + log((1/sqrt(2*pi))) + log((k*h)^(-1))
+  }
+  return(prod)  
+}
+h<-1
+Optimumbandwidthreg <- optimize(GaussKernLik, X1 = X1, X2 = X2, lower = .00001, upper = 5, maximum = TRUE, tol = .001)
+
+#Optimize runs pretty fast.
+X1perm <- datasetperm[1:(length(dataset)*.3)]
+X2perm <- datasetperm[(length(dataset)*.3 + 1):(length(dataset)*.6)]
+X3perm <- datasetperm[(length(dataset)*.6 + 1):(length(dataset))]
+
+
+Optimumbandwidthperm <- optimize(GaussKernLik, X1 = X1perm, X2 = X2perm, lower = .00001, upper = 5, maximum = TRUE, tol = .001)
+
+BFPriorFree <- GaussKernLik(Optimumbandwidthreg$maximum,X1 = X1, X2 = X3perm) - GaussKernLik(Optimumbandwidthperm$maximum,X1 = X1perm, X2 = X3)
+
+BFPriorFree
+
+plot(dataset)
 
 ```
 
+Well one of the kernels is clearly harshly favored (this is far more true then before as well). I want to see what happens if we pass which distribution the data was drawn from and proceed.
+
+```{r changing a few steps}
+set.seed(300)
+dataset1 <- rnorm(1000,mean = 10, sd =1)
+
+dataset2 <- rexp(1000)
+
+
+dataset <- dataset1
+datasetperm <- dataset2
+
+X1 <- dataset[1:(length(dataset)*.3)]
+X2 <- dataset[(length(dataset)*.3 + 1):(length(dataset)*.6)]
+X3 <- dataset[(length(dataset)*.6 + 1):(length(dataset))]
 
 
 
+h<-1
+Optimumbandwidthreg <- optimize(GaussKernLik, X1 = X1, X2 = X2, lower = .00001, upper = 5, maximum = TRUE, tol = .001)
+
+#Optimize runs pretty fast but seems to be slow if datasets are large (understandable as f is v. tiresome to compute.
+X1perm <- datasetperm[1:(length(dataset)*.3)]
+X2perm <- datasetperm[(length(dataset)*.3 + 1):(length(dataset)*.6)]
+X3perm <- datasetperm[(length(dataset)*.6 + 1):(length(dataset))]
 
 
+Optimumbandwidthperm <- optimize(GaussKernLik, X1 = X1perm, X2 = X2perm, lower = .00001, upper = 5, maximum = TRUE, tol = .001)
+
+BFPriorFree <- GaussKernLik(Optimumbandwidthreg$maximum,X1 = X1, X2 = X3perm) - GaussKernLik(Optimumbandwidthperm$maximum,X1 = X1perm, X2 = X3)
+
+BFPriorFree
+
+
+```
+This is very small...
+
+So I'm not sure what to think, the bayes factor has always been negative but it definetly feels far more negative when the distributions are off. Perhaps an examination of how things are when both datasets are clearly drawn from a certain distribution is in order.
+
+
+```{r Examination of test given in paper}
+set.seed(500)
+dataset1 <- rnorm(500)
+dataset2 <- rnorm(500)
+
+n <- length(dataset1)
+m <- length(dataset2)
+Jk1 <- 0
+Jk2 <- 0 
+Jk3 <- 0
+b <- 1
+for(j in 1:n)
+{
+  for(l in 1:n)
+  {
+    if(j != l)
+      Jk1 = Jk1 + exp(-.5 *((dataset1[j] - dataset1[l])/(sqrt(2)*b))^2)
+  }
+}
+
+
+for(j in 1:m)
+{
+  for(l in 1:m)
+  {
+    if(j != l)
+      Jk2 = Jk2 + exp(-.5 *((dataset2[j] - dataset2[l])/(sqrt(2)*b))^2)
+  }
+}
+
+for(j in 1:n)
+{
+  for(l in 1:m)
+  {
+      Jk3 = Jk3 + exp(-.5 *((dataset1[j] - dataset2[l])/(sqrt(2)*b))^2)
+  }
+}
+
+Jk = Jk1 / (n * (n-1)) + Jk2 / (m * (m-1)) + Jk3 * 2 / (n*m)
+
+Jk / sqrt(1)
+
+#Well its not 0, lets see what its variance is supposed to be
+
+#By spectral analysis: Var(J1) = var(J1), 
+
+#This isn't working out as planned...
+
+
+
+```
+Thoughts on how to compute variance estimate in just a 1 sample setting? The paper seems to assume that the variances are similar under the null, and we can estimate variances under each of them and examine appropriately. 
+
+It doesn't appear easy to do this in a simpler case.
+
+
+```{r Checking distribution of BF under equal distrib condition}
+
+#We literally loop code from earlier and store the LBFs
+
+LBFlist <-c()
+set.seed(300)
+for(D in 1:100)
+{
+dataset <- rnorm(500)
+X1 <- dataset[1:(length(dataset)*.3)]
+X2 <- dataset[(length(dataset)*.3 + 1):(length(dataset)*.6)]
+X3 <- dataset[(length(dataset)*.6 + 1):(length(dataset))]
+
+GaussKernLik <- function(h,X1,X2) 
+{
+  prod <- 0
+  k <- length(X1)
+  n <- length(X2)
+  for(j in 1:n)
+  {
+    sum <- 0
+    for(i in 1:k)
+    {
+      sum <- sum + exp(-.5*((X2[j]-X1[i])/h)^2)
+    }
+    prod <- prod + log(sum) + log((1/sqrt(2*pi))) + log((k*h)^(-1))
+  }
+  return(prod)  
+}
+h<-1
+Optimumbandwidthreg <- optimize(GaussKernLik, X1 = X1, X2 = X2, lower = .00001, upper = 5, maximum = TRUE, tol = .001)
+
+#Optimize runs pretty fast.
+X1perm <- datasetperm[1:(length(dataset)*.3)]
+X2perm <- datasetperm[(length(dataset)*.3 + 1):(length(dataset)*.6)]
+X3perm <- datasetperm[(length(dataset)*.6 + 1):(length(dataset))]
+
+
+Optimumbandwidthperm <- optimize(GaussKernLik, X1 = X1perm, X2 = X2perm, lower = .00001, upper = 5, maximum = TRUE, tol = .001)
+
+#We have an estimate for our bandwidth, we proceed with the test.
+
+BFPriorFree <- GaussKernLik(Optimumbandwidthreg$maximum,X1 = X1, X2 = X3) - GaussKernLik(Optimumbandwidthperm$maximum,X1 = X1perm, X2 = X3perm)
+
+  LBFlist[D] <- BFPriorFree
+}
+plot(LBFlist)
+summary(LBFlist)
+```
+Perhaps its reasonable to examine the distribution of the log(BF)?
+
+```
