@@ -128,7 +128,7 @@ for(G in 1:30)
     }
     prodlist1[z] <- prod + log(importancepart[z])
   }
-  Loglist[G] <- log(sum(exp(prodlist1)))
+  Loglist[G] <- logSumExp(prodlist1)
 }
 summary(Loglist)
 plot(Loglist)
