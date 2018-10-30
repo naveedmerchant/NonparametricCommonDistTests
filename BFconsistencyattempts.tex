@@ -96,7 +96,7 @@ Define $f \equiv 1 / (B_1^2 + .5n*(x^2)$ where x is a random variable drawn from
 
 The taylor series for f(x) is: $\sum_{D=0}^\infty \frac{(.5n)^{D}x^{2D}}{B_1^{2D+1}}$ if $|x| < \frac{B_1}{.5n} $
 
-if $|x| > \frac{B_1}{.5n}$ the appropriate taylor series is: $\sum_{D=1}^\infty \frac{(.5n)^{-D}x^{-2D}}{B_1^{2*(D-1)}}$ if $|x| < \frac{B_1}{.5n} $
+if $|x| > \frac{B_1}{.5n}$ the appropriate taylor series is: $\sum_{D=1}^\infty \frac{(.5n)^{-D}x^{-2D}}{B_1^{2*(D-1)}} \equiv g$ 
 
 Applying expectation to the first implies: 
 
@@ -104,23 +104,31 @@ $E[f(x)] = \sum_{D=0}^\infty \frac{(.5n)^D E[x^{2D}]}{B_1^{2D+2}}$
 
 The second is NOT dangerous. While the negative moments are normally not defined, since we are looking at a variable that is 0 for a large interval around 0, all the negative moments are infact GURANTEED to be defined. I will have to think about this a bit more later... This is good however, we no longer need to restrict the prior at all.
 
-There's actually a similar story with the positive moments as well. I am under the impression all positive moments should exist because these are truncated moments, and not actual moments. Even the Cauchy distribution's moments should be finite, as this isn't integrating this from -infinity to infinity.
+Applying expectation to the second implies:
+
+$E[g(x)] = \sum_{D=1}^\infty \frac{(.5n)^{-D}E[x^{-2D}]}{B_1^{2*(D-1)}}$
+
+There's actually a similar story with the positive moments as well. I am under the impression all positive moments should exist because these are truncated moments, and not actual moments. Even the Cauchy distribution's moments should be finite, as this isn't integrating from -infinity to infinity. For now only examine the case where $|x| < \frac{B_1}{.5n} $.
 
 Define X and Y to be from the same distribution and independent then:
 
-$E[x^{2D}] = E[(X-Y)^{2D}] = \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]$
+$E[x^{2D}] = E[(X-Y)^{2D}] = \sum_{i=0}^{2D} \binom{2D}{i}(-1)^iE[X^{2D-i}]E[X^{i}]$
 
 So...
+\begin{obeylines}
+$ \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]} \frac{1}{(.5(2B_2^2 +  \sum_{L=1}^{{n_1}} ([X_V]_{L} - i_L)^2))^{\frac{{n_1}-1}{2}}}   $  
 
-$ \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]} \frac{1}{(.5(2B_2^2 +  \sum_{L=1}^{{n_1}} ([X_V]_{L} - i_L)^2))^{\frac{{n_1}-1}{2}}}   $ should be the same as:
+Should be the same as:
 
-$ \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]} (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1-1}{2}}   $ 
+$ \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]} (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1-1}{2}}   $ 
+
+\end{obeylines}
 
 Similarly:
 
 $ \sum_{i_{n_2} \in [Y_T]} \sum_{i_{n_2-1}\in [Y_T]} \ldots  \sum_{i_{2}\in [Y_T]} \sum_{i_{1}\in [Y_T]} \frac{1}{(.5(2B_3^2 +  \sum_{L=1}^{n_2} ([Y_V]_{L} - i_L)^2))^{\frac{n_2-1}{2}}} $ should be the same as:
 
-$ \sum_{i_{n_2} \in [Y_T]} \sum_{i_{n_2-1}\in [Y_T]} \ldots  \sum_{i_{2}\in [Y_T]} \sum_{i_{1}\in [Y_T]} (\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} \binom{2D}{i}E[Y^{2D-i}]E[Y^{i}]}{B_2^{2D+2}})^{\frac{n_2-1}{2}}   $ 
+$ \sum_{i_{n_2} \in [Y_T]} \sum_{i_{n_2-1}\in [Y_T]} \ldots  \sum_{i_{2}\in [Y_T]} \sum_{i_{1}\in [Y_T]} (\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[Y^{2D-i}]E[Y^{i}]}{B_2^{2D+2}})^{\frac{n_2-1}{2}}   $ 
 
 Finally: 
 
@@ -128,63 +136,63 @@ $ \sum_{i_{n_1+n_2} \in [X_T, Y_T]} \sum_{i_{n_1+n_2-1}\in [X_T, Y_T]} \ldots  \
 
 If distribution of X and Y are the same then:
 
-$ \sum_{i_{n_1 + n_2} \in [X_T, Y_T]} \sum_{i_{n_1 + n_2-1}\in [X_T, Y_T]} \ldots  \sum_{i_{2}\in [X_T, Y_T]} \sum_{i_{1}\in [X_T, Y_T]} (\sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} \binom{2D}{i}E[Y^{2D-i}]E[X^{i}]}{B_3^{2D+2}})^{\frac{n_1 + n_2 -1}{2}}  $ 
+$ \sum_{i_{n_1 + n_2} \in [X_T, Y_T]} \sum_{i_{n_1 + n_2-1}\in [X_T, Y_T]} \ldots  \sum_{i_{2}\in [X_T, Y_T]} \sum_{i_{1}\in [X_T, Y_T]} (\sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[Y^{2D-i}]E[X^{i}]}{B_3^{2D+2}})^{\frac{n_1 + n_2 -1}{2}}  $ 
 
 Earlier we said that we could treat these sums like means, then:
 
-$ \frac{1}{(k_1+k_2)^{n_1+n_2}} \sum_{i_{n_1 + n_2} \in [X_T, Y_T]} \sum_{i_{n_1 + n_2-1}\in [X_T, Y_T]} \ldots  \sum_{i_{2}\in [X_T, Y_T]} \sum_{i_{1}\in [X_T, Y_T]} \sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} \binom{2D}{i}E[Y^{2D-i}]E[X^{i}]}{B_3^{2D}}  $ should be the same as 
+$ \frac{1}{(k_1+k_2)^{n_1+n_2}} \sum_{i_{n_1 + n_2} \in [X_T, Y_T]} \sum_{i_{n_1 + n_2-1}\in [X_T, Y_T]} \ldots  \sum_{i_{2}\in [X_T, Y_T]} \sum_{i_{1}\in [X_T, Y_T]} \sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[Y^{2D-i}]E[X^{i}]}{B_3^{2D}}  $ should be the same as 
 
-$(\sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} \binom{2D}{i}E[Y^{2D-i}]E[X^{i}]}{B_3^{2D+2}})^{\frac{n_1+n_2 - 1}{2}} $
+$(\sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[Y^{2D-i}]E[X^{i}]}{B_3^{2D+2}})^{\frac{n_1+n_2 - 1}{2}} $
 
 Alternatively this is true because the term inside our sum no longer depends on $i_l$ so it is the same as adding a constant many times and then dividing by the number of times we summed.
 
 Similarly:
 
- $ \frac{1}{(k_2)^{n_2}} \sum_{i_{n_2} \in [Y_T]} \sum_{i_{n_2-1}\in [Y_T]} \ldots  \sum_{i_{2}\in [Y_T]} \sum_{i_{1}\in [Y_T]} (\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} \binom{2D}{i}E[Y^{2D-i}]E[Y^{i}]}{B_2^{2D+2}})^{\frac{n_2 - 1}{2}}    $
+ $ \frac{1}{(k_2)^{n_2}} \sum_{i_{n_2} \in [Y_T]} \sum_{i_{n_2-1}\in [Y_T]} \ldots  \sum_{i_{2}\in [Y_T]} \sum_{i_{1}\in [Y_T]} (\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[Y^{2D-i}]E[Y^{i}]}{B_2^{2D+2}})^{\frac{n_2 - 1}{2}}    $
 
 is the same as:
 
-$(\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} \binom{2D}{i}E[Y^{2D-i}]E[Y^{i}]}{B_2^{2D+2}})^{\frac{n_2 - 1}{2}} $
+$(\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[Y^{2D-i}]E[Y^{i}]}{B_2^{2D+2}})^{\frac{n_2 - 1}{2}} $
 
 and 
 
- $ \frac{1}{(k_1)^{n_1}} \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]}  (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1 - 1}{2}}   $
+ $ \frac{1}{(k_1)^{n_1}} \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]}  (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1 - 1}{2}}   $
 
 is around: 
 
-$(\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1 - 1}{2}}$ 
+$(\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1 - 1}{2}}$ 
 
 Our BF under the Null then is roughly:
 
 $\frac{B_1}{B_2 B_3 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_2 -1}{2})} * $
 
-$\sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} \binom{2D}{i}E[Y^{2D-i}]E[X^{i}]}{B_3^{2D+2}}$ divided by 
+$\sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[Y^{2D-i}]E[X^{i}]}{B_3^{2D+2}}$ divided by 
 
 
-$ (\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} \binom{2D}{i}E[Y^{2D-i}]E[Y^{i}]}{B_2^{2D+2}}) * (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}}) $
+$ (\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[Y^{2D-i}]E[Y^{i}]}{B_2^{2D+2}}) * (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}}) $
 
 The $B_i$'s are from the prior, and is the IQR, if the distributions are the same we expect them to be similar, so... the BF under null should be
 
 $\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_2 -1}{2})} * $
 
-$(\sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1+n_2 - 1}{2}}$ divided by 
+$(\sum_{D=0}^\infty \frac{((.5(n_1 + n_2))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1+n_2 - 1}{2}}$ divided by 
 
 
-$ (\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_2 - 1}{2}} * (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1 - 1}{2}} $
+$ (\sum_{D=0}^\infty \frac{(.5n_2)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_2 - 1}{2}} * (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1 - 1}{2}} $
 
 For simplicity we show first what happens when $n_1 = n_2$
 
 $\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_1 -1}{2})} * $
 
-$(\sum_{D=0}^\infty \frac{(((n_1))^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- .5}$ divided by 
+$(\sum_{D=0}^\infty \frac{(((n_1))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- .5}$ divided by 
 
-$ (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- 1} $
+$ (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- 1} $
 
-An obvious inequality is: $(\sum_{D=0}^\infty \frac{(((n_1))^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- .5} > (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- .5} $
+An obvious inequality is: $(\sum_{D=0}^\infty \frac{(((n_1))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- .5} > (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- .5} $
 
 So this part of the BF is lowerbounded by:
 
-$\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_1 -1}{2})} * (\sum_{D=0}^\infty \frac{(((n_1))^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{.5} $
+$\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_1 -1}{2})} * (\sum_{D=0}^\infty \frac{(((n_1))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{.5} $
 
 Recall the following definitions...
 
@@ -194,9 +202,31 @@ $E[f(x)] = \sum_{D=0}^\infty \frac{(.5n)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-
 
 Then the sum is lowerbounded by $E[f(x)]$ where $f \equiv 1 / (B_1^2 + n_1*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$
 
+$E[f(x)] > 0$ because $f(x) > 0$
+
 Whatever the case, for the lower bound, the Beta term rises exponentially with n, and the sum also increases with n, but I don't know the exact amount. As a result, the lowerbound for this BF should go to infinity at least exponentially. Which implies the BF itself should also go to infinity at least exponentially under the null hypothesis.
 
 This method works if $|x| < B_1$. 
+
+For the other case:
+
+Define X and Y to be from the same distribution and independent then:
+
+$E[x^{-2D}] = E[(X-Y)^{-2D}]$
+
+We are aware it exists...
+
+Note that: $\frac{1}{X-Y} = \frac{1}{X-Y} I_{X > Y} + \frac{1}{X-Y} I_{X < Y}$. 
+
+
+\begin{obeylines}
+$ \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]} \frac{1}{(.5(2B_2^2 +  \sum_{L=1}^{{n_1}} ([X_V]_{L} - i_L)^2))^{\frac{{n_1}-1}{2}}}   $  
+
+Should be the same as:
+
+$ \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]} (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1-1}{2}}   $ 
+
+\end{obeylines}
 
 Under the alternate we would have to split up the sum into parts where we subtract over the same and different parts. That is introduce indicators.
 
