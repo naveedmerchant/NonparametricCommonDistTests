@@ -196,15 +196,15 @@ $\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_1 -1}
 
 Recall the following definitions...
 
-$f \equiv 1 / (B_1^2 + .5n*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$
+$f \equiv 1 / (B_1^2 + .5n*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$ and $|x| < \frac{B_1}{.5n}$  
 
 $E[f(x)] = \sum_{D=0}^\infty \frac{(.5n)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}}$
 
-Then the sum is lowerbounded by $E[f(x)]$ where $f \equiv 1 / (B_1^2 + n_1*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$
+Then the sum is similar to $E[f(x)]$ where $f \equiv 1 / (B_1^2 + n_1*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$
 
-$E[f(x)] > 0$ because $f(x) > 0$
+Clearly, $E[f(x)] > 0$ because $f(x) > 0$
 
-Whatever the case, for the lower bound, the B term rises exponentially with n, and the sum also increases with n, but I don't know the exact amount. As a result, the lowerbound for this BF should go to infinity at least exponentially. Which implies the BF itself should also go to infinity at least exponentially under the null hypothesis.
+Whatever the case, for the lower bound, the B term rises exponentially with n, and the sum, at worst, decreases quadratically with n. So the square root of the sum should decrease at least linearly with n. As a result, the lowerbound for this BF should go to infinity exponentially. Which implies the BF itself should also go to infinity at least exponentially under the null hypothesis.
 
 This method works if $|x| < B_1$. 
 
@@ -238,7 +238,7 @@ If $|\frac{X}  {Y} | < 1$ then:
 
 $(X - Y)^{-n} = \sum_{k=0}^{\infty} (-1)^{2k} \binom{n+k-1}{k}{X^k}{Y^{-n-k}}$
 
-Taking expectations and changing a few numbers implies:
+Taking expectations and setting n= 2D implies:
 
 $E[(X - Y)]^{-2D} = \sum_{k=0}^{\infty} (-1)^{2k} \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]$
 
