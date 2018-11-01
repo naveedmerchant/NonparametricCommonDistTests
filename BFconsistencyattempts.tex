@@ -204,7 +204,7 @@ Then the sum is lowerbounded by $E[f(x)]$ where $f \equiv 1 / (B_1^2 + n_1*(x^2)
 
 $E[f(x)] > 0$ because $f(x) > 0$
 
-Whatever the case, for the lower bound, the Beta term rises exponentially with n, and the sum also increases with n, but I don't know the exact amount. As a result, the lowerbound for this BF should go to infinity at least exponentially. Which implies the BF itself should also go to infinity at least exponentially under the null hypothesis.
+Whatever the case, for the lower bound, the B term rises exponentially with n, and the sum also increases with n, but I don't know the exact amount. As a result, the lowerbound for this BF should go to infinity at least exponentially. Which implies the BF itself should also go to infinity at least exponentially under the null hypothesis.
 
 This method works if $|x| < B_1$. 
 
@@ -218,13 +218,93 @@ We are aware it exists...
 
 Note that: $\frac{1}{X-Y} = \frac{1}{X-Y} I_{X > Y} + \frac{1}{X-Y} I_{X < Y}$. 
 
+If $|X| > Y$ Then note that:
+
+$(X - Y)^{-n} = \sum_{k=0}^{\infty} (-1)^{2k} \binom{n+k-1}{k}{Y^k}{X^{-n-k}}$
+
+Taking expectations implies:
+
+$E[(X - Y)]^{-n} = \sum_{k=0}^{\infty} (-1)^{2k} \binom{n+k-1}{k}E[{Y^k}]E[{X^{-n-k}}]$
+
+Unfortunately, we now must make the assumption that the moments of X exist. I think it is possible to complete this proof without using this since we know the negative expectations of x do exist, but I am having trouble relating them to the moments of X and Y without using a trick like this.
+
+For the better or worse, the existence of the expectation to a power does not imply anything about whether X or Y have moments that are finite.
+
+I am aware the series converges regardless of whether the expectation is finite, but I am not aware what its form is unless I assume something about its expectation... There's probably something out there that makes this easier...
+
+Similarly:
+
+If $|\frac{X}  {Y} | < 1$ then:
+
+$(X - Y)^{-n} = \sum_{k=0}^{\infty} (-1)^{2k} \binom{n+k-1}{k}{X^k}{Y^{-n-k}}$
+
+Taking expectations and changing a few numbers implies:
+
+$E[(X - Y)]^{-2D} = \sum_{k=0}^{\infty} (-1)^{2k} \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]$
+
+We now proceed similarly to the previous part:
+
+$E[g(x)] = \sum_{D=1}^\infty \frac{(.5n)^{-D}\sum_{k=0}^{\infty} (-1)^{2k} \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]}{B_1^{2*(D-1)}} $
 
 \begin{obeylines}
-$ \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]} \frac{1}{(.5(2B_2^2 +  \sum_{L=1}^{{n_1}} ([X_V]_{L} - i_L)^2))^{\frac{{n_1}-1}{2}}}   $  
+$ \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]} (\sum_{D=1}^\infty \frac{(.5n)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_1}-1}{2}}   $  
 
-Should be the same as:
+Again recall, this is like an average:
 
-$ \sum_{i_{n_1} \in [X_T]} \sum_{i_{n_1-1}\in [X_T]} \ldots  \sum_{i_{2}\in [X_T]} \sum_{i_{1}\in [X_T]} (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{n_1-1}{2}}   $ 
+$(\sum_{D=1}^\infty \frac{(.5n)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_1}-1}{2}}   $
+
+Our BF should end up being:
+
+$\frac{B_1}{B_2B_3 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_2 -1}{2})} * $
+
+$(\sum_{D=1}^\infty \frac{(.5(n_1+n_2))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{Y^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_1 + n_2}-1}{2}} $ divided by
+
+$((\sum_{D=1}^\infty \frac{(.5n_1)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{Y^k}]E[{Y^{-2D-k}}]}{B_2^{2*(D-1)}})^{\frac{{n_1}-1}{2}}  *(\sum_{D=1}^\infty \frac{(.5n_2)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_3^{2*(D-1)}})^{\frac{{n_2}-1}{2}})   $
+
+Suppose null hypothesis is true (distributions are the same) and then that sample sizes are equal, then our $B_i$'s are all equal, and the BF is:
+
+$\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_2 -1}{2})} * $
+
+$(\sum_{D=1}^\infty \frac{((n_1))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{2*n_1}-1}{2}} $ divided by
+
+$((\sum_{D=1}^\infty \frac{(.5n_1)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_1}-1}{2}}  *(\sum_{D=1}^\infty \frac{(.5n_1)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_1}-1}{2}})   $
+
+Which is the identical to:
+
+$\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_2 -1}{2})} * $
+
+$(\sum_{D=1}^\infty \frac{((n_1))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{2*n_1}-1}{2}} $ divided by
+
+$(((\sum_{D=1}^\infty \frac{(.5n_1)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_1}-1}{2}})^2  $
+
+By an argument identical to the case where $|x| < B_1$, we conclude this also should go to infinity at least exponentially (we use the same lower bound, and the same idea to show the sum is positive and increasing with n). 
+
+The proof for if $|\frac{Y}  {X} | < 1$ follows in the exact same fashion.
+
+So we use both ideas together now.
+
+Recall our problem is we want to compute:
+
+$\frac{\int_0^\infty \! f([X_V,Y_V];[ X_T,Y_T] |h) f_1(h)\, \mathrm{d}h}{\int_0^\infty \! f(Y_V; Y_T|h) f_3(h)\, \mathrm{d}h \int_0^\infty \! f(X_V; X_T|h) f_2(h)\, \mathrm{d}h}$
+
+We can split each of the integrals into parts where the dataset has a value smaller than $B_i$ and a value larger than $B_i$. For instance for the top integral...
+
+$\int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and < B_1};[ X_T,Y_T] |h) f_1(h) + \int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and i > B_1};[ X_T,Y_T] |h) f_1(h)$
+
+We do this for every integral then the BF is:
+
+$\frac{\int_0^\infty \! f([X_V,Y_V];[ X_T,Y_T] |h) f_1(h)\, \mathrm{d}h}{\int_0^\infty \! f(Y_V; Y_T|h) f_3(h)\, \mathrm{d}h \int_0^\infty \! f(X_V; X_T|h) f_2(h)\, \mathrm{d}h} = $
+
+$\frac{\int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and < B_1};[ X_T,Y_T] |h) f_1(h) + \int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and i > B_1};[ X_T,Y_T] |h) f_1(h)}{\int_0^\infty \! f([X_V]I_{i \in {X_V} and < B_2};[ X_T|h) f_2(h) + \int_0^\infty \! f(X_V]I_{i \in {X_V} and i > B_2};[X_T] |h) f_2(h) + \int_0^\infty \! f([Y_V]I_{i \in {Y_V} and < B_2};[ Y_T|h) f_3(h) + \int_0^\infty \! f(Y_V]I_{i \in {Y_V} and i > B_3};[Y_T] |h) f_3(h)}$
+
+Assume the following: All expectations are finite, and this is the Null hypothesis so the distributions are the same and that we assign a prior of a similar form to earlier. The BF should be equal to:
+
+$\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_2 -1}{2})} * \frac{(\sum_{D=1}^\infty \frac{((n_1))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{n_1 - .5} + (\sum_{D=0}^\infty \frac{(((n_1))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- .5}}{((\sum_{D=1}^\infty \frac{(.5n_1)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{{{n_1} - 1}}) + (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- 1}} $
+
+
+
+
+
 
 \end{obeylines}
 
