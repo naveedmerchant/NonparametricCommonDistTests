@@ -367,8 +367,27 @@ A lower bound for the BF that we want to examine then is:
 
  $\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_{1} -1}{2}, \frac{n_1 -1}{2})} * \frac{ (\sum_{D=1}^\infty \frac{((n_{21}))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{n_{21} - .5} + (\sum_{D=0}^\infty \frac{((n_{22}))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_{22}- .5}}{2(\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{{n_{21}} - 1} + 2(\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{{n_{22}} - 1}}$
 
-I think this can be shown to behave as we desire asymptotically by the results we showed in the case where looked at the BF where we restricted whether we examined the x's that were less than a certain quantity and greater than a certain quantity?
+I think this can be shown to behave as we desire asymptotically by the results we showed in the case where looked at the BF where we restricted whether we examined the x's that were less than a certain quantity and greater than a certain quantity.
 
+To be more specific... we first compute:
+
+$max({2(\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{{n_{21}} - 1}, 2(\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{{n_{22}} - 1}})$
+
+The denominator of the last fraction is upper bounded by this 2 times this quantity, so substituting it in lower bounds our lower bound for the BF.
+
+The maximum of two elements is either the first element or the second one. If its the first element, then the lower bound is:
+
+ $\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_{1} -1}{2}, \frac{n_1 -1}{2})} * \frac{ (\sum_{D=1}^\infty \frac{((n_{21}))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{n_{21} - .5} + (\sum_{D=0}^\infty \frac{((n_{22}))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_{22}- .5}}{4(\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{{n_{21}} - 1}}$
+
+Which definetly diverges to infinity by an exponential rate as a result of the proof of the part where we computed the BF when we assumed all $|x| < \sqrt{B_1 / .5n}$
+
+If the other element is chosen the lower bound is:
+
+$ \frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_{1} -1}{2}, \frac{n_1 -1}{2})} * \frac{ (\sum_{D=1}^\infty \frac{((n_{21}))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{n_{21} - .5} + (\sum_{D=0}^\infty \frac{((n_{22}))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_{22}- .5}}{4(\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{{n_{22}} - 1}}$
+
+Which definetly diverges to infinity by an exponential rate as a result of the proof of the part where we computed the BF when we assumed all $|x| > \sqrt{B_1 / .5n}$
+
+The proof is complete for the Null case.
 \end{obeylines}
 
 Under the alternate we would have to split up the sum into parts where we subtract over the same and different parts. That is introduce indicators.
