@@ -13,7 +13,6 @@
 \topmargin=-20pt
 
 
-%\pagestyle{fancy}%\lhead{Irina Gaynanova, irinag@stat.tamu.edu} \rhead{CV}
 
 % Font for the whole document	
 \usepackage[bitstream-charter]{mathdesign}
@@ -94,9 +93,9 @@ For now because of the assumptions of our test, $[X_V]_{L}$ is the same distribu
 
 Define $f \equiv 1 / (B_1^2 + .5n*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$
 
-The taylor series for f(x) is: $\sum_{D=0}^\infty \frac{(.5n)^{D}x^{2D}}{B_1^{2D+1}}$ if $|x| < \frac{B_1}{.5n} $
+The taylor series for f(x) is: $\sum_{D=0}^\infty \frac{(.5n)^{D}x^{2D}}{B_1^{2D+1}}$ if $|x| < \sqrt{\frac{B_1}{.5n}} $
 
-if $|x| > \frac{B_1}{.5n}$ the appropriate taylor series is: $\sum_{D=1}^\infty \frac{(.5n)^{-D}x^{-2D}}{B_1^{2*(D-1)}} \equiv g$ 
+if $|x| > \sqrt{\frac{B_1}{.5n}}$ the appropriate taylor series is: $\sum_{D=1}^\infty \frac{(.5n)^{-D}x^{-2D}}{B_1^{2*(D-1)}} \equiv g$ 
 
 Applying expectation to the first implies: 
 
@@ -196,25 +195,25 @@ $\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_1 -1}
 
 Recall the following definitions...
 
-$f \equiv 1 / (B_1^2 + .5n*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$
+$f \equiv 1 / (B_1^2 + .5n*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$ and $|x| < \sqrt{\frac{B_1}{.5n}}$  
 
 $E[f(x)] = \sum_{D=0}^\infty \frac{(.5n)^D \sum_{i=0}^{2D} \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}}$
 
-Then the sum is lowerbounded by $E[f(x)]$ where $f \equiv 1 / (B_1^2 + n_1*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$
+Then the sum is similar to $E[f(x)]$ where $f \equiv 1 / (B_1^2 + n_1*(x^2)$ where x is a random variable drawn from this distribution $[X_V]_{L} - i_L$
 
-$E[f(x)] > 0$ because $f(x) > 0$
+Clearly, $E[f(x)] > 0$ because $f(x) > 0$
 
-Whatever the case, for the lower bound, the B term rises exponentially with n, and the sum also increases with n, but I don't know the exact amount. As a result, the lowerbound for this BF should go to infinity at least exponentially. Which implies the BF itself should also go to infinity at least exponentially under the null hypothesis.
+Whatever the case, for the lower bound, the B term rises exponentially with n, and the sum, at worst, decreases quadratically with n. So the square root of the sum should decrease at least linearly with n. As a result, the lowerbound for this BF should go to infinity exponentially. Which implies the BF itself should also go to infinity at least exponentially under the null hypothesis.
 
-This method works if $|x| < B_1$. 
+This method works if $|x| < \sqrt{\frac{B_1}{.5n}} $. 
 
-For the other case:
+For the other case (or rather if $|x| > \sqrt{\frac{B_1}{.5n}} $:
 
 Define X and Y to be from the same distribution and independent then:
 
 $E[x^{-2D}] = E[(X-Y)^{-2D}]$
 
-We are aware it exists...
+We are aware it exists for all n I believe. We should be careful asymptotically...
 
 Note that: $\frac{1}{X-Y} = \frac{1}{X-Y} I_{X > Y} + \frac{1}{X-Y} I_{X < Y}$. 
 
@@ -238,7 +237,7 @@ If $|\frac{X}  {Y} | < 1$ then:
 
 $(X - Y)^{-n} = \sum_{k=0}^{\infty} (-1)^{2k} \binom{n+k-1}{k}{X^k}{Y^{-n-k}}$
 
-Taking expectations and changing a few numbers implies:
+Taking expectations and setting n= 2D implies:
 
 $E[(X - Y)]^{-2D} = \sum_{k=0}^{\infty} (-1)^{2k} \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]$
 
@@ -277,7 +276,7 @@ $(\sum_{D=1}^\infty \frac{((n_1))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^
 
 $(((\sum_{D=1}^\infty \frac{(.5n_1)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_1}-1}{2}})^2  $
 
-By an argument identical to the case where $|x| < B_1$, we conclude this also should go to infinity at least exponentially (we use the same lower bound, and the same idea to show the sum is positive and increasing with n). 
+By an argument identical to the case where $|x| <\sqrt{\frac{B_1}{.5n}}$, we conclude this also should go to infinity at least exponentially (we use the same lower bound, and the same idea to show the sum is positive and less influential then the exponential portion). 
 
 The proof for if $|\frac{Y}  {X} | < 1$ follows in the exact same fashion.
 
@@ -295,24 +294,85 @@ We do this for every integral then the BF is:
 
 $\frac{\int_0^\infty \! f([X_V,Y_V];[ X_T,Y_T] |h) f_1(h)\, \mathrm{d}h}{\int_0^\infty \! f(Y_V; Y_T|h) f_3(h)\, \mathrm{d}h \int_0^\infty \! f(X_V; X_T|h) f_2(h)\, \mathrm{d}h} = $
 
-$\frac{\int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and < B_1};[ X_T,Y_T] |h) f_1(h) + \int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and i > B_1};[ X_T,Y_T] |h) f_1(h)}{\int_0^\infty \! f([X_V]I_{i \in {X_V} and < B_2};[ X_T|h) f_2(h) + \int_0^\infty \! f(X_V]I_{i \in {X_V} and i > B_2};[X_T] |h) f_2(h) + \int_0^\infty \! f([Y_V]I_{i \in {Y_V} and < B_2};[ Y_T|h) f_3(h) + \int_0^\infty \! f(Y_V]I_{i \in {Y_V} and i > B_3};[Y_T] |h) f_3(h)}$
+$\frac{\int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and < \sqrt{\frac{B_1}{.5n}}};[ X_T,Y_T] |h) f_1(h) + \int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and i > \sqrt{\frac{B_1}{.5n}}};[ X_T,Y_T] |h) f_1(h)}{\int_0^\infty \! f([X_V]I_{i \in {X_V} and < \sqrt{\frac{B_2}{.5n}}};[ X_T|h) f_2(h) + (\int_0^\infty \! f(X_V]I_{i \in {X_V} and i > \sqrt{\frac{B_2}{.5n}}};[X_T] |h) f_2(h)) * (\int_0^\infty \! f([Y_V]I_{i \in {Y_V} and < \sqrt{\frac{B_3}{.5n}}};[ Y_T|h) f_3(h) + \int_0^\infty \! f(Y_V]I_{i \in {Y_V} and i > \sqrt{\frac{B_3}{.5n}}};[Y_T] |h) f_3(h))}$
 
-Assume the following: All expectations are finite, and this is the Null hypothesis so the distributions are the same and that we assign a prior of a similar form to earlier. The BF should be equal to:
+Assume the following: All expectations are finite, and this is the Null hypothesis so the distributions are the same and that we assign a prior of a similar form to earlier. For additional simplicity assume sample sizes are the same... The BF should be equal to:
 
-$\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_2 -1}{2})} * \frac{(\sum_{D=1}^\infty \frac{((n_1))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{n_1 - .5} + (\sum_{D=0}^\infty \frac{(((n_1))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- .5}}{((\sum_{D=1}^\infty \frac{(.5n_1)^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{{{n_1} - 1}}) + (\sum_{D=0}^\infty \frac{(.5n_1)^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_1- 1}} $
+$\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_{1} -1}{2}, \frac{n_1 -1}{2})} * (\sum_{D=1}^\infty \frac{((n_{11}))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{n_{11} - .5} + (\sum_{D=0}^\infty \frac{((n_{12}))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_{12}- .5} $
 
+divided by the product of 
 
+$ ({(\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_{21}} - 1}{2}} + (\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{{n_{22}} - 1}{2}}})$
 
+and
 
+$({(\sum_{D=1}^\infty \frac{(.5n_{31})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_{31}} - 1}{2}} + (\sum_{D=0}^\infty \frac{(.5n_{32})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{{n_{32}} - 1}{2}}}) $
 
+We make the following definitions:
+
+$n_{11} + n_{12} = n$
+
+$n_{31} + n_{21} = n_{11}$
+
+$n_{32} + n_{22} = n_{12}$
+
+$n_{31} + n_{32} = .5 * n = n_{21} + n_{22}$
+
+We expand the denominator:
+
+$ (\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_{21}} - 1}{2}} * (\sum_{D=1}^\infty \frac{(.5n_{31})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_{31}} - 1}{2}} +$ 
+
+$ (\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{{n_{22}} - 1}{2}}*(\sum_{D=0}^\infty \frac{(.5n_{32})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{{n_{32}} - 1}{2}} +$
+
+$ (\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{{n_{22}} - 1}{2}}*(\sum_{D=1}^\infty \frac{(.5n_{31})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_{31}} - 1}{2}} +$
+
+$ (\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_{21}} - 1}{2}}*(\sum_{D=0}^\infty \frac{(.5n_{32})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{{n_{32}} - 1}{2}}$
+
+Recall the numerator is:
+$\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_{1} -1}{2}, \frac{n_1 -1}{2})} * (\sum_{D=1}^\infty \frac{((n_{11}))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{.5*n_{11} - .5} + (\sum_{D=0}^\infty \frac{((n_{12}))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{.5*n_{12}- .5} $
+
+For now we assume $n_{21} = n_{31} $ and $n_{22} = n_{32}$. Then this simplifies some of the expressions in the denominator and numerator...
+
+Numerator becomes:
+
+$\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_{1} -1}{2}, \frac{n_1 -1}{2})} * (\sum_{D=1}^\infty \frac{((n_{21}))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{n_{21} - .5} + (\sum_{D=0}^\infty \frac{((n_{22}))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_{22}- .5} $
+
+Denominator is:
+
+$ (\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{{n_{21}} - 1} +(\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{{n_{22}} - 1} $
+
+and cross terms... 
+
+We crudely bound the cross terms by taking the square of the higher amount, instead of computing the cross product. This should give an upper bound for denominator, or a lower bound for the BF...
+
+Without loss of generality, suppose 
+
+$ (\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{\frac{{n_{22}} - 1}{2}} > (\sum_{D=1}^\infty \frac{(.5n_{31})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_{31}} - 1}{2}} $ and
+
+$ (\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{\frac{{n_{21}} - 1}{2}} > (\sum_{D=0}^\infty \frac{(.5n_{32})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{{{n_{32}} - 1}}$
+
+Then the cross terms are upper bounded by:
+
+$ \sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{{{n_{21}} - 1}} +  \sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{{{n_{22}} - 1}} $
+
+Then the BF is lower bounded by: $ 2(\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{{n_{21}} - 1} + 2(\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{{n_{22}} - 1}$
+
+It may seem the choice of which cross term is larger is of importance... but it only really changes the constant the sums in the denominator is multiplied by.
+
+A lower bound for the BF that we want to examine then is:
+
+ $\frac{1}{B_1 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_{1} -1}{2}, \frac{n_1 -1}{2})} * \frac{ (\sum_{D=1}^\infty \frac{((n_{21}))^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{n_{21} - .5} + (\sum_{D=0}^\infty \frac{((n_{22}))^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{n_{22}- .5}}{2(\sum_{D=1}^\infty \frac{(.5n_{21})^{-D}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{B_1^{2*(D-1)}})^{{n_{21}} - 1} + 2(\sum_{D=0}^\infty \frac{(.5n_{22})^D \sum_{i=0}^{2D} (-1)^i \binom{2D}{i}E[X^{2D-i}]E[X^{i}]}{B_1^{2D+2}})^{{n_{22}} - 1}}$
+
+I think this can be shown to behave as we desire asymptotically by the results we showed in the case where looked at the BF where we restricted whether we examined the x's that were less than a certain quantity and greater than a certain quantity?
 
 \end{obeylines}
 
 Under the alternate we would have to split up the sum into parts where we subtract over the same and different parts. That is introduce indicators.
 
-Nothing changes with the denominator in the BF, the numerator should now have a very interesting expression. Regardless, if two distributions are different it'll show in their moments! So things will behave very differently compared to the null situation.
+If two distributions are different it'll show in their moments! So things will behave very differently compared to the null situation.
 
 $ \sum_{i_{n_1+n_2} \in [X_T, Y_T]} \sum_{i_{n_1+n_2-1}\in [X_T, Y_T]} \ldots  \sum_{i_{2}\in [X_T, Y_T]} \sum_{i_{1}\in [X_T, Y_T]} \frac{1}{(.5(2B_1^2 +  \sum_{L=1}^{n_1+n_2} ([X_V, Y_V]_{L}*I_{([X_V, Y_V]_{L} \in X_V)} - i_L)^2))^{\frac{(n_1+n_2)-1}{2}}} $
 
+Perhaps there is an easier way to deal with this without creating so many terms...
 
 \end{document}
