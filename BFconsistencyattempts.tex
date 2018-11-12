@@ -420,12 +420,62 @@ Under the alternate we would have to split up the sum into parts where we subtra
 
 $\frac{\int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and < \sqrt{\frac{B_1}{.5n}}};[ X_T,Y_T] |h) f_1(h) + \int_0^\infty \! f([X_V,Y_V]I_{i \in {X_V,Y_V} and i > \sqrt{\frac{B_1}{.5n}}};[ X_T,Y_T] |h) f_1(h)}{\int_0^\infty \! f([X_V]I_{i \in {X_V} and < \sqrt{\frac{B_2}{.5n}}};[ X_T|h) f_2(h) + (\int_0^\infty \! f(X_V]I_{i \in {X_V} and i > \sqrt{\frac{B_2}{.5n}}};[X_T] |h) f_2(h)) * (\int_0^\infty \! f([Y_V]I_{i \in {Y_V} and < \sqrt{\frac{B_3}{.5n}}};[ Y_T|h) f_3(h) + \int_0^\infty \! f(Y_V]I_{i \in {Y_V} and i > \sqrt{\frac{B_3}{.5n}}};[Y_T] |h) f_3(h))}$
 
-Now we want to have:
+We want to use all the general results we made earlier. For instance, earlier for the Null hypothesis when the difference between the two distributions is small, we had:
 
-If two distributions are different it'll show in their moments! So things will behave very differently compared to the null situation.
+$\frac{B_1}{B_2B_3 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_2 -1}{2})} * $
 
-$ \sum_{i_{n_1+n_2} \in [X_T, Y_T]} \sum_{i_{n_1+n_2-1}\in [X_T, Y_T]} \ldots  \sum_{i_{2}\in [X_T, Y_T]} \sum_{i_{1}\in [X_T, Y_T]} \frac{1}{(.5(2B_1^2 +  \sum_{L=1}^{n_1+n_2} ([X_V, Y_V]_{L}*I_{([X_V, Y_V]_{L} \in X_V)} - i_L)^2))^{\frac{(n_1+n_2)-1}{2}}} $
+$(\sum_{D=1}^\infty \frac{B_1^{2*(D-1)}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]}{(-.5*(n_1+n_2))^{D}})^{\frac{{n_1 + n_2}-1}{2}}$ divided by
 
-Perhaps there is an easier way to deal with this without creating so many terms...
+$(\sum_{D=1}^\infty \frac{B_2^{2*(D-1)}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]}{(-.5*(n_1))^{D}})^{\frac{{n_1}-1}{2}} * (\sum_{D=1}^\infty \frac{B_3^{2*(D-1)}\sum_{k=0}^{\infty}  \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]}{(-.5*(n_2))^{D}})^{\frac{{n_2}-1}{2}}$
+
+In the denominator the distributions are the same, in the numerator its more tricky... Under the alternative the distributions are different, this is the equivalent of saying some of the expectations on a bounded interval differ...
+
+$\frac{B_1}{B_2B_3 \sqrt{\pi}} * \frac{1}{ \mathbf{B}(\frac{n_1 -1}{2}, \frac{n_2 -1}{2})} * $
+
+$(\sum_{D=1}^\infty \frac{B_1^{2*(D-1)}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{Y^{-2D-k}}]}{(-.5*(n_1+n_2))^{D}})^{\frac{{n_1 + n_2}-1}{2}}$ divided by
+
+$(\sum_{D=1}^\infty \frac{B_2^{2*(D-1)}\sum_{k=0}^{\infty} \binom{2D+k-1}{k}E[{X^k}]E[{X^{-2D-k}}]}{(-.5*(n_1))^{D}})^{\frac{{n_1}-1}{2}} * (\sum_{D=1}^\infty \frac{B_3^{2*(D-1)}\sum_{k=0}^{\infty}  \binom{2D+k-1}{k}E[{Y^k}]E[{Y^{-2D-k}}]}{(-.5*(n_2))^{D}})^{\frac{{n_2}-1}{2}}$
+
+So we've dealt with the denominator, lets take a look again what we were trying to do for the numerator. Our original intention was to find a nice way to write:
+
+$\sum_{i_{n_1+n_2} \in [X_T, Y_T]} \sum_{i_{n_1+n_2-1}\in [X_T, Y_T]} \ldots  \sum_{i_{2}\in [X_T, Y_T]} \sum_{i_{1}\in [X_T, Y_T]} \frac{1}{(.5(2B_1^2 +  \sum_{L=1}^{n_1+n_2} ([X_V, Y_V]_{L} - i_L)^2))^{\frac{(n_1+n_2)-1}{2}}} $
+
+In the alternative case, where the distribution of X and Y are different, $i_L$ is distributed as a mixture of the X and Y distribution. We can interpret this is as $i_L$ must either come from X or Y. Then there are four cases. $i_L$ comes from the X distribution and the term from $[X_V, Y_V]_{L}$ comes from the Y distribution. $i_L$ comes from the X distribution and the term from $[X_V, Y_V]_{L}$ comes from the X distribution. $i_L$ comes from the Y distribution and the term from $[X_V, Y_V]_{L}$ comes from the X distribution. $i_L$ comes from the Y distribution and the term from $[X_V, Y_V]_{L}$ comes from the Y distribution. Each of these events have some probability of them occuring attached to them. We can still use the idea we had earlier:
+
+Define $f \equiv 1 / (B_1^2 + .5n*(x^2)$ where x is a random variable drawn from this distribution $[X_V,Y_V]_{L} - i_L$
+
+The taylor series for f(x) is: $\sum_{D=0}^\infty \frac{(-.5n)^{D}x^{2D}}{B_1^{2D+1}}$ if $|x| < \sqrt{\frac{B_1}{.5n}} $
+
+if $|x| > \sqrt{\frac{B_1}{.5n}}$ the appropriate taylor series is: $\sum_{D=1}^\infty \frac{(-.5n)^{-D}x^{-2D}}{B_1^{2*(-D+1)}} \equiv g$ 
+
+Applying expectation to the first implies: 
+
+$E[f(x)] = \sum_{D=0}^\infty \frac{(-.5n)^D E[x^{2D}]}{B_1^{2D+2}}$
+
+x is a mixture of 4 distributions... We want to compute the moments of x. We can try a multinomial expansion? Is there an easier idea? If we use multinomial expansion we say: 
+
+$E[x^{2D}] = E[(p_1(Y-Y') + p_2(X-X')+ p_3(Y-X) +p_4 (X-Y))^{2D}] = \sum_{k_1 + k_2 + k_3 + k_4=2D} \binom{2D}{k_1,k_2,k_3,k_4} E[(p_1(Y-Y'))^{k_1}*(p_2(X-X'))^{k_2}*(p_3(Y-X))^{k_3}*(p_4(X-Y))^{k_4}]$
+
+The sum of the $p_i$'s equal 1. The expectation taken here is a little different then the expectation we took before.
+
+$|x| < \sqrt{\frac{B_1}{.5n}} $ implies $ |(p_1(Y-Y') + p_2(X-X')+ p_3(Y-X) +p_4 (X-Y))| < \sqrt{\frac{B_1}{.5n}} $. The expectation is restricted in an interesting way... Using triangle inequality implies all of the inner terms should be bounded given all of the p's are bigger than 0. This isn't exactly it, but the point is the expectations are at least bounded I guess?
+
+Then taylor series for f is:
+
+$E[f(x)] = \sum_{D=0}^\infty \frac{(-.5n)^D \sum_{k_1 + k_2 + k_3 + k_4=2D} \binom{2D}{k_1,k_2,k_3,k_4} E[(p_1(Y-Y'))^{k_1}*(p_2(X-X'))^{k_2}*(p_3(Y-X))^{k_3}*(p_4(X-Y))^{k_4}]}{B_1^{2D+2}}$
+
+Breaking apart the expectation is hard, but you can factor out the $p_i$'s. Although I don't know how useful that is. It is maximized when all the $p_i$'s are equal to each other.
+
+The usual tricks are applied from here...
+
+Taylor series for g is:
+
+$\sum_{D=1}^\infty \frac{(-.5n)^{-D}E[x^{-2D}]}{B_1^{2*(-D+1)}}$
+
+You can apply negative multinomial expansion again, but must just be careful when factoring things out.
+
+Perhaps there is an easier way to deal with this without creating so many terms... 
+
+We don't have to show too much to prove that this goes to 0. If the numerator before being exponentiated is smaller than the denominator before being exponentiated, that should inherently imply that the fraction is going to 0 exponentially. We must then show that this is "stronger" than the log beta term.
 
 \end{document}
