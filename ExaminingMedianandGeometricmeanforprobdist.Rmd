@@ -1,0 +1,185 @@
+---
+title: "MedianandGeoMeantest"
+author: "Naveed Merchant"
+date: "October 23, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We're curious to see if our proof has the wrong idea. We examine two functions that are completely different but have the same mean and variance.
+
+We draw from a normal and a normal mixture which have the same variance and same mean, but clearly are not the same function.
+
+```{r Simulation and test}
+gm_mean = function(x, na.rm=TRUE){
+  exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
+}
+set.seed(10000)
+#install.packages("rmutil")
+library(matrixStats)
+library(rmutil)
+source("MarginalLikIntfunctions.R")
+set.seed(10000)
+dlength <- 600
+LBF <- c()
+LBF2 <- c()
+dataset1 <- rcauchy(dlength)
+dataset2 <- rcauchy(dlength)
+for(i in 1:30)
+{
+  dataset1 <- sample(dataset1)
+  dataset2 <- sample(dataset2)
+  XT1 <- dataset1[1:(dlength*.3)]
+  XV1 <- dataset1[-(1:dlength*.3)]
+  XT2 <- dataset2[1:(dlength*.3)]
+  XV2 <- dataset2[-(1:dlength*.3)]
+  ExpectedKernML <- logmarg.kernMCimport(XT1,XV1,iter = 1, importsize = 100) + logmarg.kernMCimport(XT2,XV2,iter = 1,importsize = 100)
+  ExpectedKernML2 <- logmarg.kernMCimport(c(XT1,XT2),c(XV1,XV2),iter = 1,importsize = 100)
+  LBF[i] <- ExpectedKernML - ExpectedKernML2
+}
+plot(LBF)
+LBF
+median(sort(LBF))
+```
+
+The log BF is interesting at least...
+
+Geometric mean has problems.
+
+Median doesn't.
+
+We didn't change sample size for this, all we did was shuffle training and validation.
+
+Also using R's integrate seems to fail and just suggests that the integral is diverging. Importance sampling doesn't do anything with this, so it'll work fine, but its slow.
+
+```{r changing sizes of training and validation}
+set.seed(10000)
+#install.packages("rmutil")
+library(rmutil)
+source("MarginalLikIntfunctions.R")
+set.seed(10000)
+dlength <- 600
+LBF <- c()
+LBF2 <- c()
+dataset1 <- rcauchy(dlength)
+dataset2 <- rcauchy(dlength)
+trainprop <- seq(from = .3, to = .8, length = 30)
+for(i in 1:30)
+{
+  dataset1 <- sample(dataset1)
+  dataset2 <- sample(dataset2)
+  XT1 <- dataset1[1:(dlength*trainprop[i])]
+  XV1 <- dataset1[-(1:dlength*trainprop[i])]
+  XT2 <- dataset2[1:(dlength*trainprop[i])]
+  XV2 <- dataset2[-(1:dlength*trainprop[i])]
+  ExpectedKernML <- logmarg.kernMCimport(XT1,XV1,iter = 1, importsize = 100) + logmarg.kernMCimport(XT2,XV2,iter = 1,importsize = 100)
+  ExpectedKernML2 <- logmarg.kernMCimport(c(XT1,XT2),c(XV1,XV2),iter = 1,importsize = 100)
+  LBF[i] <- ExpectedKernML - ExpectedKernML2
+}
+
+plot(LBF)
+LBF
+median(sort(LBF))
+
+```
+This is still with a pretty pathological distribution (none of its moments are defined!).
+
+Things are behaving as expected again suprisingly? The median LBF is essentially 0...
+
+Again computing geometric mean is essentially impossible.
+
+I'm not sure where the NaN is coming from?
+
+What about the pareto?
+
+```{r Pareto check}
+#Finite mean but infinite variance
+
+set.seed(10000)
+dlength <- 300
+dataset1 <- rpareto(dlength, m=2.5, s=2.5)
+dataset2 <- rpareto(dlength, m=2.5, s=2.5)
+LBF <- c()
+trainprop <- seq(from = .3, to = .8, length = 30)
+for(i in 1:30)
+{
+  XT1 <- dataset1[1:(dlength*trainprop[i])]
+  XV1 <- dataset1[-(1:(dlength*trainprop[i]))]
+  XT2 <- dataset2[1:((dlength*trainprop[i]))]
+  XV2 <- dataset2[-(1:(dlength*trainprop[i]))]
+  ExpectedKernML <- logmarg.kern(XT1,XV1)[[2]] + logmarg.kern(XT2,XV2)[[2]]
+  ExpectedKernML2 <- logmarg.kern(c(XT1,XT2),c(XV1,XV2))[[2]]
+  LBF[i] <- ExpectedKernML - ExpectedKernML2
+}
+plot(LBF)
+mean(LBF)
+median(LBF)
+```
+Taking the mean of the logBF is the same as examining the log of the geometric mean of the BF...
+
+What's suprising is that the logBF seems to be dependent on how many samples are being chosen for training for this problem?
+
+We let more moments be 0 and see what happens. We used the integrate function this time as we didn't have computational issues...
+
+```{r Pareto check 2}
+#Finite mean and variance, but infinite higher moments.
+
+set.seed(10000)
+dlength <- 300
+dataset1 <- rpareto(dlength, m=1.5, s=1.5)
+dataset2 <- rpareto(dlength, m=1.5, s=1.5)
+LBF <- c()
+trainprop <- seq(from = .3, to = .8, length = 30)
+for(i in 1:30)
+{
+  XT1 <- dataset1[1:(dlength*trainprop[i])]
+  XV1 <- dataset1[-(1:(dlength*trainprop[i]))]
+  XT2 <- dataset2[1:((dlength*trainprop[i]))]
+  XV2 <- dataset2[-(1:(dlength*trainprop[i]))]
+  ExpectedKernML <- logmarg.kern(XT1,XV1)[[2]] + logmarg.kern(XT2,XV2)[[2]]
+  ExpectedKernML2 <- logmarg.kern(c(XT1,XT2),c(XV1,XV2))[[2]]
+  LBF[i] <- ExpectedKernML - ExpectedKernML2
+}
+plot(LBF)
+LBF
+log(gm_mean(exp(LBF)))
+mean(LBF)
+median(LBF)
+
+
+```
+This favors the null hypothesis for most choices of training size, but not all. Lets check the normal distribution.
+
+```{r Normal }
+set.seed(10000)
+dlength <- 300
+dataset1 <- rnorm(dlength)
+dataset2 <- rnorm(dlength)
+LBF <- c()
+trainprop <- seq(from = .3, to = .8, length = 30)
+for(i in 1:30)
+{
+  XT1 <- dataset1[1:(dlength*trainprop[i])]
+  XV1 <- dataset1[-(1:(dlength*trainprop[i]))]
+  XT2 <- dataset2[1:((dlength*trainprop[i]))]
+  XV2 <- dataset2[-(1:(dlength*trainprop[i]))]
+  ExpectedKernML <- logmarg.kern(XT1,XV1)[[2]] + logmarg.kern(XT2,XV2)[[2]]
+  ExpectedKernML2 <- logmarg.kern(c(XT1,XT2),c(XV1,XV2))[[2]]
+  LBF[i] <- ExpectedKernML - ExpectedKernML2
+}
+plot(LBF)
+LBF
+log(gm_mean(exp(LBF)))
+mean(LBF)
+median(LBF)
+
+
+```
+
+I'm not sure if there's a trend I should be aware of?
+
+If things are normal things are fine. 
+

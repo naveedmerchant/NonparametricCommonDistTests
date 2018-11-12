@@ -19,7 +19,7 @@ normdraw <- rnorm(1000,sd = 1)
 unifdraw <- runif(1000)
 mixturenormdraw <- rnorm(1000,mean = 3, sd = 1)*(unifdraw > 0.5) + rnorm(1000,mean = 3, sd = 1)*(unifdraw <= 0.5)
 
-dlength <- 1000
+dlength <- 100
 
 dataset1 <- normdraw
 dataset2 <- mixturenormdraw
@@ -32,6 +32,9 @@ source("MarginalLikIntfunctions.R")
 ExpectedKernML <- logmarg.kern(XT1,XV1)[[2]] + logmarg.kern(XT2,XV2)[[2]]
 ExpectedKernML2 <- logmarg.kern(c(XT1,XT2),c(XV1,XV2))[[2]]
 ExpectedKernML - ExpectedKernML2
+RandomKernML <- logmarg.kernMC(XT1,XV1) + logmarg.kern(XT2,XV2)
+RandomKernML2 <- logmarg.kernMC(c(XT1,XT2),c(XV1,XV2))
+RandomKernML - RandomKernML2
 ```
 
 The log BF overwhelmingly favors the alternative hypothesis.

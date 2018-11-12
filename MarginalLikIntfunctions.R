@@ -1,3 +1,4 @@
+library(matrixStats)
 logmarg.kern=function(y,x,prior=1){
   
   out=optim(.4,loglike.KGauss,method="L-BFGS-B",lower=.0001,upper=5,y=y,x=x)
@@ -69,4 +70,67 @@ integrand.Gauss=function(h,y,x,cons,prior){
   
   f
   
+}
+
+logmarg.kernMC=function(X1,X2,iter = 10000)
+{
+  require(matrixStats)
+  n <- length(X2)
+  k <- length(X1)
+  sum1 <- c()  
+  sum1list <- c()
+  R = quantile(X1,probs=c(.25,.75))
+  R=R[2]-R[1]
+  R = unname(R)
+  B = R / 1.35
+  #browser()
+  for(i in 1:iter)
+  {
+    l <- sample(1:k,n, replace = TRUE)
+    sum1 <- sum((X2 - X1[l])^2)
+    sum1 <- lgamma((n-1)/2) - ((n-1)/2)*log(.5*(2*B^2 + sum1)) 
+    sum1list[i] <- sum1
+  }
+  logMCinteg <-log(B / sqrt(pi)) - (n/2)*log(2*pi) + logSumExp(sum1list) - log(iter)
+  return(logMCinteg)
+}
+
+
+logmarg.kernMCimport=function(X1,X2,iter = 50,importsize = 200)
+{
+  R = quantile(X1,probs=c(.25,.75))
+  R=R[2]-R[1]
+  R = unname(R)
+  B = R / 1.35
+  Loglist <- c()
+  k <- length(X1)
+  n <- length(X2)
+  for(G in 1:iter)
+  {
+    
+    cauchsamp<- rcauchy(importsize)
+    
+    poscauchsamp <- cauchsamp[cauchsamp > 0] 
+    
+    importancepart <- ((2*B*(1/poscauchsamp^2)*(exp(-(B^2)/(poscauchsamp)^2)) / sqrt(pi))) / (2*dcauchy(poscauchsamp))
+    
+    prodlist1<-c()
+    
+    for(z in 1:length(poscauchsamp))
+    {
+      prod <- 0
+      for(j in 1:n)
+      {
+        sum <- 0
+        for(i in 1:k)
+        {
+          sum <- sum + exp(-.5*((X2[j]-X1[i])/poscauchsamp[z])^2)
+        }
+        prod <- prod + log(sum) + log((1/sqrt(2*pi))) - log((k*poscauchsamp[z]))
+      }
+      prodlist1[z] <- prod + log(importancepart[z])
+    }
+    Loglist[G] <- logSumExp(prodlist1)
+  }
+  return(Loglist)
 }
